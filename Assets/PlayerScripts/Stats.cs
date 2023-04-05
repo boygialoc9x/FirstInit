@@ -23,4 +23,10 @@ public class Stats : MonoBehaviour
     {
         return speed;
     }
+
+    public void AddSpeed(float amount)
+    {
+        speed += amount;
+    }
+    
 }

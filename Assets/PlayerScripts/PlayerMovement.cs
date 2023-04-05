@@ -20,19 +20,34 @@ public class PlayerMovement : MonoBehaviour
         float trans2 = Input.GetAxis("Horizontal") * stats.getSpeed();
         body.velocity = new Vector3(trans2, body.velocity.y, translation);
         safePoint = transform.position;
+        LooseDetect();
     }
 
-    private void FixedUpdate()
-    {
-        
-    }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Wall")
+        if (collision.gameObject.CompareTag("Wall"))
         {
             //body.velocity = Vector3.zero;
             //body.angularVelocity = Vector3.zero;
             transform.position = safePoint;
         }
     }
+
+    public void BoostSpeed(float amount)
+    {
+        stats.AddSpeed(amount);
+    }
+    void Loose()
+    {
+        print("LOOSEE");
+    }
+
+    void LooseDetect()
+    {
+        if(transform.position.y < 0)
+        {
+            Loose();
+        }
+    }
+
 }
