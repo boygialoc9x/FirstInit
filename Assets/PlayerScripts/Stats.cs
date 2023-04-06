@@ -28,5 +28,13 @@ public class Stats : MonoBehaviour
     {
         speed += amount;
     }
+
+    public void AddSpeed(float amount, float maxAmount)
+    {
+        if(speed < maxAmount)
+        {
+            AddSpeed(amount);
+        }
+    }
     
 }

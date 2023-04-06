@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Collect : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class Collect : MonoBehaviour
     Material _mat;
     Renderer _renderer;
     int _point;
+    [SerializeField] AudioSource _pickUp;
+    [SerializeField] Text _pointText;
+    [SerializeField] int _winPointTarget = 10;
     void Recolor()
     {
         var renderer = GetComponent<Renderer>();
@@ -18,21 +22,26 @@ public class Collect : MonoBehaviour
         renderer.material = mat;
     }
 
+    void UpdateText()
+    {
+        _pointText.text = "Point: " + _point;
+    }
+
     void Start()
     {
         _point = 0;
+        UpdateText();
         var spawner = GameObject.Find("Spawner");
         _mats = spawner.GetComponent<CubeSpawner>().GetMaterial();
         Recolor();
     }
     void OnCollisionEnter(Collision collision)
     {
-        var renderer = GetComponent<Renderer>();
         if(collision.gameObject.CompareTag("Cube"))
         {
             if(collision.gameObject.GetComponent<Collectible>().GetCurrentMaterial() != _mat)
             {
-                Loose();
+                GetComponent<PlayerLife>().Die();
             }
             else
             {
@@ -42,14 +51,22 @@ public class Collect : MonoBehaviour
         }
     }
 
-    void Loose()
-    {
-    }
 
     void AddPoint()
     {
         Recolor();
         _point++;
-        GetComponent<PlayerMovement>().BoostSpeed(_point);
+        GetComponent<PlayerMovement>().BoostSpeed(_point/3);
+        UpdateText();
+        _pickUp.Play();
+        WinCheck();
+    }
+
+    void WinCheck()
+    {
+        if(_point >= _winPointTarget)
+        {
+             GetComponent<PlayerLife>().Win();
+        }
     }
 }

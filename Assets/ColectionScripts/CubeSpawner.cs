@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class CubeSpawner : MonoBehaviour
 {
-    GameObject cube;
+    [SerializeField] GameObject cube;
     [SerializeField] int num;
     [SerializeField] Material[] mats;
     GameObject level;
     List<GameObject> cubes;
-    
     public Material[] GetMaterial()
     {
         return mats;
@@ -17,7 +16,7 @@ public class CubeSpawner : MonoBehaviour
 
     void Start()
     {
-        cube = GameObject.Find("Cube");     
+        //cube = GameObject.Find("Sphere");     
         level = GameObject.Find("Level");
         var floor = level.transform.Find("Floor");
         var fr = floor.gameObject.GetComponent<Renderer>();
