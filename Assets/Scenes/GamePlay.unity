@@ -443,7 +443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _pickUp: {fileID: 208184961}
   _pointText: {fileID: 1995717336}
-  _winPointTarget: 1
+  _winPointTarget: 10
 --- !u!114 &208184960
 MonoBehaviour:
   m_ObjectHideFlags: 0
