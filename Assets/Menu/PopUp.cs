@@ -17,11 +17,12 @@ public class PopUp : MonoBehaviour
     public void Disable()
     {
         _target.SetActive(false);
-
+        
     }
     public void Enable()
     {
         _target.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void SetMessage(string message)

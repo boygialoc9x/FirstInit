@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Text _speedText;
     [SerializeField] float _maxSpeed = 50;
 
+    [SerializeField]
+    private Transform camTransform;
+
     void Start()
     {
         stats = GetComponent<Stats>();
@@ -19,15 +23,60 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateText()
     {
-        _speedText.text = "Speed: " + stats.getSpeed();
+        _speedText.text = "Speed: " + (stats.getSpeed() * spd_scaler);
     }
 
+    float spd_scaler = 1.0f;
+    float energy = 500;
+
+    bool _on_spd_up = false;
+    
     void Update()
     {
-        float translation = Input.GetAxis("Vertical") * stats.getSpeed();
-        float trans2 = Input.GetAxis("Horizontal") * stats.getSpeed();
-        body.velocity = new Vector3(trans2, body.velocity.y, translation);
+
+        float vert = Input.GetAxis("Vertical") * stats.getSpeed();
+        float hort = Input.GetAxis("Horizontal") * stats.getSpeed();
+
+        Vector3 moveDir = new Vector3(hort, 0, vert);
+        float inputMag = Mathf.Clamp01(moveDir.magnitude);
+
+        float spd = inputMag * stats.getSpeed();
+        moveDir = Quaternion.AngleAxis(camTransform.rotation.eulerAngles.y, Vector3.up) * moveDir;
+        moveDir.Normalize();
+
+        Vector3 vel = moveDir * spd * spd_scaler;
+        vel.y = body.velocity.y;
+
+        if(Input.GetKeyDown(KeyCode.LeftShift) && !_on_spd_up) {
+            spd_scaler = 2;
+            _on_spd_up = true;
+        }
+
+        if(Input.GetKeyUp(KeyCode.LeftShift) && _on_spd_up) {
+            _on_spd_up = false;
+            spd_scaler = 1;
+        }
+
+        if(_on_spd_up) {
+            energy -= 1;
+            if(energy <= 0) {
+                _on_spd_up = false;
+                spd_scaler = 1;
+            }
+        }
+        else {
+            energy += 1;
+            if(energy >= 500) energy = 500;
+        }
+
+        body.velocity = vel;
+        //body.velocity = new Vector3(hort, body.velocity.y, vert);
         safePoint = transform.position;
+        if(moveDir != Vector3.zero) {
+            Quaternion toRotation = Quaternion.LookRotation(moveDir, Vector3.up);
+
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 720 * Time.deltaTime);
+        }
         UpdateText();
     }
 
@@ -48,5 +97,7 @@ public class PlayerMovement : MonoBehaviour
             stats.AddSpeed(amount);
         }
     }
+
+
 
 }

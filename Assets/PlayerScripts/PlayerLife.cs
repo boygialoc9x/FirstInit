@@ -8,6 +8,7 @@ public class PlayerLife : MonoBehaviour
     [SerializeField] AudioSource _deathSound;
     [SerializeField] GameObject _endGame;
     // Update is called once per frame
+    [SerializeField] MeshRenderer _other;
 
     void OnCollisionEnter(Collision collision)
     {
@@ -16,11 +17,13 @@ public class PlayerLife : MonoBehaviour
             Die();    
         }
     }
+    bool _die = false;
     public void Die()
     {
         Disable();
         _deathSound.Play();
         Invoke(nameof(Lose), 1.5f);
+        this._die = true;
     }
 
     public void Disable()
@@ -28,6 +31,7 @@ public class PlayerLife : MonoBehaviour
         GetComponent<MeshRenderer>().enabled = false;
         GetComponent<Rigidbody>().isKinematic = true;
         GetComponent<PlayerMovement>().enabled = false;
+        _other.enabled = false;
     }
     
     void Lose()
@@ -44,5 +48,13 @@ public class PlayerLife : MonoBehaviour
         x.SetMessage("YOU WIN");
         x.Enable();
     }
-
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if(hasFocus && _die == false) {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else {
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
 }
